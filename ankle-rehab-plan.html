@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echo 1.0 — Ankle Rehab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3f1f8; --ink:#241f33; --ink-soft:#565073;
+    --line:#cbc5db; --accent:#8478c9; --accent-deep:#544596; --chalk:#fcfbff;
+    --track:#ddd7ea;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{background:#e3dfef;}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.35;-webkit-font-smoothing:antialiased;}
+  .sheet{max-width:840px;margin:24px auto;background:var(--paper);padding:30px 38px 26px;border:1px solid var(--line);}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid var(--ink);padding-bottom:11px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;letter-spacing:-0.02em;line-height:1.05;}
+  h1 span{color:var(--accent);}
+  .meta{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-soft);text-align:right;}
+
+  .key{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin:14px 0 16px;}
+  .key div{background:var(--chalk);padding:8px 11px;}
+  .key .lbl{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-deep);font-weight:700;margin-bottom:2px;}
+  .key .val{font-size:11.5px;font-weight:500;}
+  .key .val em{font-style:normal;color:var(--ink-soft);font-size:10.5px;}
+  .key div.tcell{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .clock{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:var(--accent);letter-spacing:-0.01em;flex:0 0 auto;font-variant-numeric:tabular-nums;}
+
+  /* session structure timeline */
+  .struct{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:0 0 20px;}
+  .struct div{background:var(--chalk);padding:8px 11px;}
+  .struct .st-hd{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:3px;}
+  .struct .st-n{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-deep);}
+  .struct .st-t{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-soft);}
+  .struct .st-b{font-size:10.5px;color:var(--ink-soft);line-height:1.35;}
+  .struct .main{background:#efeaff;}
+  .struct .main .st-b{color:var(--ink);}
+
+  .days{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .day-head{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+  .tag{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:var(--chalk);background:var(--accent);padding:2px 8px;}
+  .day-head h2{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13.5px;}
+  .day-sub{font-family:'Space Mono',monospace;font-size:8.5px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);margin-bottom:6px;}
+
+  .block{margin-bottom:6px;}
+  .phase{font-family:'Space Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.09em;color:var(--accent-deep);font-weight:700;margin:9px 0 2px;}
+
+  .row{display:grid;grid-template-columns:30px 22px 1fr auto;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid var(--line);}
+  .ic{width:30px;height:30px;display:block;}
+  .ord{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--accent-deep);}
+  .nm{font-size:12px;font-weight:500;line-height:1.15;}
+  .nm small{display:block;font-size:8.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.05em;font-weight:600;margin-top:1px;}
+  .nm small.cmp{color:var(--accent-deep);}
+  .dose{text-align:right;white-space:nowrap;}
+  .dose .rp{font-family:'Space Mono',monospace;font-size:11.5px;}
+
+  /* Session C note */
+  .cband{margin-top:20px;}
+  .cband .day-head{margin-bottom:6px;}
+  .cnote{background:var(--chalk);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 13px;font-size:11.5px;line-height:1.5;color:var(--ink-soft);}
+  .cnote b{color:var(--ink);font-weight:600;}
+  .cnote ul{margin:5px 0 0;padding-left:16px;}
+  .cnote li{margin-bottom:3px;}
+
+  h3.sec{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;border-bottom:2px solid var(--ink);padding-bottom:5px;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:baseline;}
+  h3.sec span{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:400;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);}
+
+  .measure{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;}
+  .proto{font-size:11px;line-height:1.55;color:var(--ink-soft);}
+  .proto li{margin:0 0 3px 15px;}
+  .proto b{color:var(--ink);font-weight:600;}
+  .mtable{width:100%;border-collapse:collapse;font-size:10.5px;}
+  .mtable th{font-family:'Space Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-deep);text-align:left;padding:5px 7px;border-bottom:1.5px solid var(--ink);}
+  .mtable td{padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.35;}
+  .mtable td b{font-weight:600;}
+  .mtable .v{font-family:'Space Mono',monospace;color:var(--accent-deep);white-space:nowrap;}
+  .diag{margin-top:10px;background:var(--chalk);border:1px solid var(--line);padding:9px 12px;font-size:10.5px;line-height:1.5;color:var(--ink-soft);}
+  .diag b{color:var(--ink);font-weight:600;}
+
+  .prog{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  .prog ul{list-style:none;}
+  .prog li{font-size:11px;line-height:1.45;color:var(--ink-soft);padding-left:16px;position:relative;margin-bottom:5px;}
+  .prog li::before{content:"";position:absolute;left:2px;top:6px;width:5px;height:5px;background:var(--accent);border-radius:50%;}
+  .prog li b{color:var(--ink);font-weight:600;}
+  .bench{background:var(--chalk);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 13px;font-size:11px;line-height:1.5;color:var(--ink-soft);}
+  .bench b{color:var(--ink);font-weight:600;}
+  .bench .big{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--accent-deep);display:block;margin:3px 0;}
+
+  .review{background:var(--chalk);border:1px solid var(--line);padding:12px 15px;}
+  .review .intro{font-size:11px;color:var(--ink-soft);margin-bottom:9px;line-height:1.5;}
+  .review .intro b{color:var(--ink);font-weight:600;}
+  .chk{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line);font-size:11.5px;line-height:1.4;cursor:pointer;}
+  .chk input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:16px;height:16px;border:2px solid var(--accent);border-radius:3px;margin-top:1px;cursor:pointer;position:relative;background:var(--paper);}
+  .chk input:checked{background:var(--accent);}
+  .chk input:checked::after{content:"";position:absolute;left:4px;top:0px;width:4px;height:9px;border:solid var(--chalk);border-width:0 2px 2px 0;transform:rotate(45deg);}
+  .chk span b{font-weight:600;}
+  .review .out{font-size:10.5px;color:var(--ink-soft);margin-top:10px;line-height:1.5;font-style:italic;}
+
+  /* training / session log */
+  .tl-form{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:end;background:var(--chalk);border:1px solid var(--line);padding:11px 13px;margin-bottom:12px;}
+  .tl-field{display:flex;flex-direction:column;gap:4px;}
+  .tl-lbl{font-family:'Space Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-deep);font-weight:700;}
+  .tl-seg{display:flex;gap:1px;background:var(--line);border:1px solid var(--line);}
+  .tl-seg button{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;width:34px;height:30px;border:none;background:var(--paper);color:var(--ink-soft);cursor:pointer;transition:background .12s,color .12s;}
+  .tl-seg button.on{background:var(--accent);color:var(--chalk);}
+  .tl-seg button:hover:not(.on){background:#e7e2f6;}
+  .tl input[type=date],.tl input[type=number]{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink);background:var(--paper);border:1px solid var(--line);height:30px;padding:0 8px;border-radius:0;}
+  .tl input:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+  .tl-add{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;color:var(--chalk);background:var(--accent-deep);border:none;height:30px;padding:0 16px;cursor:pointer;transition:filter .12s;}
+  .tl-add:hover{filter:brightness(1.1);}
+  .tl-add:active{transform:translateY(1px);}
+  .tl-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  .tl-table th{font-family:'Space Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);text-align:left;padding:5px 9px;border-bottom:1.5px solid var(--ink);}
+  .tl-table th:last-child,.tl-table td:last-child{width:34px;text-align:right;}
+  .tl-table th:nth-child(3),.tl-table td:nth-child(3){text-align:right;}
+  .tl-table td{padding:6px 9px;border-bottom:1px solid var(--line);}
+  .tl-table td.date{font-family:'Space Mono',monospace;color:var(--ink);}
+  .tl-table td.ses{font-family:'Space Grotesk',sans-serif;font-weight:700;}
+  .tl-table td.ktw{font-family:'Space Mono',monospace;color:var(--accent-deep);}
+  .tl-del{border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:15px;line-height:1;padding:2px 4px;border-radius:3px;transition:background .12s,color .12s;}
+  .tl-del:hover{background:rgba(132,120,201,.15);color:var(--accent-deep);}
+  .tl-empty{font-size:11px;color:var(--ink-soft);font-style:italic;padding:10px 2px;}
+  .tl-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+  .tl-status{font-family:'Space Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:0.05em;display:flex;align-items:center;gap:6px;}
+  .tl-status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink-soft);flex:0 0 auto;}
+  .tl-status[data-mode="off"]{color:var(--ink-soft);}
+  .tl-status[data-mode="ok"]{color:var(--accent-deep);}
+  .tl-status[data-mode="ok"]::before{background:#5aa06b;}
+  .tl-status[data-mode="sync"]{color:var(--accent-deep);}
+  .tl-status[data-mode="sync"]::before{background:var(--accent);}
+  .tl-status[data-mode="err"]{color:#b04a4a;}
+  .tl-status[data-mode="err"]::before{background:#b04a4a;}
+  .tl-gear{font-family:'Space Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent-deep);font-weight:700;background:none;border:1px solid var(--line);padding:5px 10px;cursor:pointer;transition:background .12s;}
+  .tl-gear:hover{background:#e7e2f6;}
+  .tl-cfg{background:var(--chalk);border:1px solid var(--line);border-left:3px solid var(--accent);padding:12px 14px;margin-bottom:12px;}
+  .tl-cfg-note{font-size:10.5px;line-height:1.5;color:var(--ink-soft);margin-bottom:10px;}
+  .tl-cfg-note b{color:var(--ink);font-weight:600;}
+  .tl-cfg-note a{color:var(--accent-deep);}
+  .tl-cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;}
+  .tl-cfg-grid label{display:flex;flex-direction:column;gap:3px;font-family:'Space Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.07em;color:var(--accent-deep);font-weight:700;}
+  .tl-cfg-tok{grid-column:1 / -1;}
+  .tl-cfg-grid input{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink);background:var(--paper);border:1px solid var(--line);height:30px;padding:0 8px;}
+  .tl-cfg-grid input:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+  .tl-cfg-btns{display:flex;gap:9px;margin-top:11px;}
+  .tl-clear{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;color:var(--ink-soft);background:none;border:1px solid var(--line);height:30px;padding:0 14px;cursor:pointer;transition:background .12s;}
+  .tl-clear:hover{background:#e7e2f6;}
+  a{color:var(--accent-deep);}
+  a:hover{color:var(--accent);}
+
+  .logs{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;}
+  .ltable{width:100%;border-collapse:collapse;font-size:10.5px;}
+  .ltable caption{font-family:'Space Mono',monospace;font-size:8.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-deep);font-weight:700;text-align:left;margin-bottom:5px;}
+  .ltable th{font-family:'Space Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);text-align:left;padding:4px 6px;border-bottom:1.5px solid var(--ink);}
+  .ltable td{padding:0;border:1px solid var(--line);height:22px;}
+
+  footer{margin-top:20px;border-top:1px solid var(--line);padding-top:9px;font-size:10px;color:var(--ink-soft);line-height:1.55;}
+  footer b{color:var(--ink);font-weight:600;}
+  footer .fh{font-family:'Space Mono',monospace;font-size:8.5px;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-deep);font-weight:700;margin:8px 0 2px;}
+
+  .rt{position:relative;width:54px;height:54px;border-radius:50%;border:none;padding:0;cursor:pointer;flex:0 0 auto;background:conic-gradient(var(--accent) var(--deg,360deg), var(--track) 0);transition:filter .15s,transform .1s;-webkit-tap-highlight-color:transparent;}
+  .rt:hover{filter:brightness(1.06);}
+  .rt:active{transform:scale(.96);}
+  .rt:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .rt-time{position:absolute;inset:6px;border-radius:50%;background:var(--chalk);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:-0.02em;}
+  .rt.running .rt-time{color:var(--accent-deep);}
+  .rt.done{animation:rtflash .5s ease;}
+  .rt.done .rt-time{background:var(--accent);color:var(--chalk);}
+  @keyframes rtflash{0%{transform:scale(1);}40%{transform:scale(1.08);}100%{transform:scale(1);}}
+
+  .row{position:relative;cursor:pointer;padding-right:15px;}
+  .row:hover{background:rgba(132,120,201,.07);}
+  .chev{position:absolute;right:1px;top:50%;width:7px;height:7px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:translateY(-70%) rotate(45deg);transition:transform .2s;pointer-events:none;}
+  .row.open .chev{transform:translateY(-25%) rotate(-135deg);}
+  .detail{overflow:hidden;max-height:0;transition:max-height .28s ease;background:#ece7fa;}
+  .detail-inner{display:flex;gap:13px;padding:10px 12px 12px;}
+  .detail-fig{flex:0 0 auto;width:70px;height:70px;background:var(--chalk);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+  .detail-fig svg{width:58px;height:58px;}
+  .detail-txt{font-size:11px;line-height:1.5;color:var(--ink-soft);}
+  .detail-txt p{margin:0 0 4px;}
+  .detail-txt p:last-child{margin-bottom:0;}
+  .detail-txt b{color:var(--ink);font-weight:600;}
+
+  @media print{html,body{background:#fff;}.sheet{margin:0;border:none;max-width:none;padding:11mm 12mm 8mm;}@page{size:A4;margin:0;}.rt{display:none;}.chev{display:none;}.row:hover{background:none;}}
+  @media (max-width:680px){.days,.measure,.prog,.logs,.key,.struct{grid-template-columns:1fr;}.tl-form{grid-template-columns:1fr 1fr;}.sheet{padding:20px 18px;}}
+</style>
+</head>
+<body>
+
+<!-- ===== ICON LIBRARY (hidden) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <style>
+      .b{fill:none;stroke:#241f33;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+      .e{fill:none;stroke:#8478c9;stroke-width:3;stroke-linecap:round;}
+      .g{fill:none;stroke:#cbc5db;stroke-width:2;stroke-linecap:round;}
+    </style>
+
+    <symbol id="bulgarian" viewBox="0 0 48 48">
+      <line class="g" x1="4" y1="42" x2="28" y2="42"/>
+      <path class="g" d="M30 42 L30 33 L44 33"/>
+      <circle class="b" cx="17" cy="13" r="3.4"/>
+      <path class="b" d="M17 16 L18 27"/>
+      <path class="b" d="M18 27 L15 35 L15 42"/>
+      <path class="b" d="M18 27 L28 32 L33 32"/>
+      <path class="b" d="M17 20 L12 26"/>
+      <line class="e" x1="10" y1="24" x2="14" y2="28"/>
+    </symbol>
+
+    <symbol id="calfStraight" viewBox="0 0 48 48">
+      <path class="g" d="M6 42 L22 42 L22 35 L42 35"/>
+      <circle class="b" cx="21" cy="11" r="3.4"/>
+      <path class="b" d="M21 14 L21 32"/>
+      <path class="b" d="M21 32 L21 39 L26 41"/>
+      <path class="b" d="M21 20 L16 25"/><path class="b" d="M21 20 L26 25"/>
+      <path class="e" d="M17 42 L26 42"/>
+    </symbol>
+
+    <symbol id="calfBent" viewBox="0 0 48 48">
+      <path class="g" d="M6 42 L22 42 L22 35 L42 35"/>
+      <circle class="b" cx="21" cy="12" r="3.4"/>
+      <path class="b" d="M21 15 L21 30"/>
+      <path class="b" d="M21 30 L18 37 L24 41"/>
+      <path class="b" d="M21 20 L16 25"/><path class="b" d="M21 20 L26 25"/>
+      <path class="e" d="M18 42 L27 42"/>
+    </symbol>
+
+    <symbol id="eversion" viewBox="0 0 48 48">
+      <path class="b" d="M15 30 L15 18"/>
+      <path class="b" d="M15 30 L26 33"/>
+      <path class="b" d="M26 33 L31 29"/>
+      <path class="e" d="M31 31 Q40 27 39 37"/>
+      <line class="e" x1="37" y1="37" x2="41" y2="37"/>
+    </symbol>
+
+    <symbol id="toeMatrix" viewBox="0 0 48 48">
+      <circle class="g" cx="12" cy="40" r="1.6"/>
+      <circle class="g" cx="36" cy="40" r="1.6"/>
+      <circle class="g" cx="24" cy="45" r="1.6"/>
+      <circle class="b" cx="24" cy="11" r="3.4"/>
+      <path class="b" d="M24 14 L24 30 L24 41"/>
+      <path class="e" d="M24 30 L13 39"/>
+      <path class="b" d="M24 19 L16 22"/><path class="b" d="M24 19 L32 22"/>
+    </symbol>
+
+    <symbol id="glide" viewBox="0 0 48 48">
+      <line class="g" x1="6" y1="42" x2="42" y2="42"/>
+      <line class="g" x1="41" y1="8" x2="41" y2="42"/>
+      <circle class="b" cx="15" cy="13" r="3.4"/>
+      <path class="b" d="M16 16 L21 27"/>
+      <path class="b" d="M21 27 L31 33 L31 42"/>
+      <path class="b" d="M31 33 L37 39"/>
+      <path class="b" d="M21 27 L14 37 L10 42"/>
+      <path class="b" d="M19 20 L29 24"/>
+      <line class="e" x1="34" y1="33" x2="40" y2="33"/>
+    </symbol>
+
+    <symbol id="cossack" viewBox="0 0 48 48">
+      <line class="g" x1="4" y1="42" x2="44" y2="42"/>
+      <circle class="b" cx="17" cy="16" r="3.4"/>
+      <path class="b" d="M17 19 L20 29"/>
+      <path class="b" d="M20 29 L15 36 L16 42"/>
+      <path class="b" d="M20 29 L39 41"/>
+      <path class="b" d="M19 23 L28 23"/>
+      <line class="e" x1="28" y1="20" x2="28" y2="26"/>
+    </symbol>
+
+    <symbol id="deficit" viewBox="0 0 48 48">
+      <path class="g" d="M6 38 L16 38 L16 44 L44 44"/>
+      <circle class="b" cx="18" cy="12" r="3.4"/>
+      <path class="b" d="M18 15 L18 26"/>
+      <path class="b" d="M18 26 L13 35 L12 42"/>
+      <path class="b" d="M18 26 L28 38 L32 44"/>
+      <path class="b" d="M18 19 L13 24"/>
+      <line class="e" x1="11" y1="22" x2="15" y2="26"/>
+    </symbol>
+
+    <symbol id="balance" viewBox="0 0 48 48">
+      <path class="g" d="M14 42 Q24 47 34 42"/>
+      <line class="g" x1="15" y1="40" x2="33" y2="40"/>
+      <circle class="b" cx="24" cy="11" r="3.4"/>
+      <path class="b" d="M24 14 L24 30"/>
+      <path class="b" d="M24 30 L24 39"/>
+      <path class="b" d="M24 30 L31 34"/>
+      <path class="b" d="M24 19 L15 16"/><path class="b" d="M24 19 L33 16"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="sheet">
+
+  <header>
+    <h1>Echo <span>1.0</span></h1>
+    <div class="meta">Ankle &amp; foot ligament rehab<br>3 sessions / week · ~40 min · dorsiflexion focus</div>
+  </header>
+
+  <div class="key">
+    <div class="tcell"><div><div class="lbl">Strength sets</div><div class="val">1–2 reps in reserve <em>· rest 90 s–2 min</em></div></div><button class="rt" data-seconds="120" data-label="2:00" aria-label="Start strength rest timer, 2 minutes"><span class="rt-time">2:00</span></button></div>
+    <div class="tcell"><div><div class="lbl">Balance hold</div><div class="val">Eyes closed → unstable → landings</div></div><button class="rt" data-seconds="45" data-label="0:45" aria-label="Start 45 second balance hold timer"><span class="rt-time">0:45</span></button></div>
+    <div class="tcell"><div><div class="lbl">Review point</div><div class="val">4–6 weeks <em>· then reassess</em></div></div><div class="clock" id="clock">--h--</div></div>
+  </div>
+
+  <!-- SESSION STRUCTURE -->
+  <div class="struct">
+    <div><div class="st-hd"><span class="st-n">Warm-up</span><span class="st-t">5–8 min</span></div><div class="st-b">Heat + ball rolling on the calf.</div></div>
+    <div class="main"><div class="st-hd"><span class="st-n">Strength · main</span><span class="st-t">20 min</span></div><div class="st-b">Must be genuinely hard.</div></div>
+    <div><div class="st-hd"><span class="st-n">Proprioceptive</span><span class="st-t">8 min</span></div><div class="st-b">Balance, landings, toe-touch matrix.</div></div>
+    <div><div class="st-hd"><span class="st-n">Mobility · glides</span><span class="st-t">5 min</span></div><div class="st-b">End of session, when warm.</div></div>
+  </div>
+
+  <div class="days">
+
+    <!-- ========== SESSION A ========== -->
+    <section>
+      <div class="day-head"><span class="tag">A</span><h2>Heavy Unilateral</h2></div>
+      <div class="day-sub">Load the dorsiflexion driver</div>
+
+      <div class="phase">Strength · main</div>
+      <div class="block">
+        <div class="row"><svg class="ic"><use href="#bulgarian"/></svg><span class="ord">A1</span><span class="nm">Bulgarian split squat<small class="cmp">DBs · per side</small></span><span class="dose"><span class="rp">3–4 × 6–10</span></span></div>
+        <div class="row"><svg class="ic"><use href="#calfStraight"/></svg><span class="ord">A2</span><span class="nm">Single-leg calf raise<small class="cmp">Straight knee · gastroc</small></span><span class="dose"><span class="rp">3 × 8–15</span></span></div>
+        <div class="row"><svg class="ic"><use href="#eversion"/></svg><span class="ord">A3</span><span class="nm">Resisted eversion<small>Band</small></span><span class="dose"><span class="rp">3 × 15</span></span></div>
+      </div>
+
+      <div class="phase">Proprioceptive</div>
+      <div class="block">
+        <div class="row"><svg class="ic"><use href="#toeMatrix"/></svg><span class="ord">A4</span><span class="nm">Single-leg toe-touch matrix<small>Fwd / back / lateral</small></span><span class="dose"><span class="rp">3 × 6 ea</span></span></div>
+      </div>
+
+      <div class="phase">Mobility · glides</div>
+      <div class="block">
+        <div class="row"><svg class="ic"><use href="#glide"/></svg><span class="ord">A5</span><span class="nm">Talocrural glide + lunge<small>End of session</small></span><span class="dose"><span class="rp">3 × 10</span></span></div>
+      </div>
+    </section>
+
+    <!-- ========== SESSION B ========== -->
+    <section>
+      <div class="day-head"><span class="tag">B</span><h2>Depth &amp; Control</h2></div>
+      <div class="day-sub">Heel-down range and stability</div>
+
+      <div class="phase">Strength · main</div>
+      <div class="block">
+        <div class="row"><svg class="ic"><use href="#cossack"/></svg><span class="ord">B1</span><span class="nm">Cossack squat<small class="cmp">Heel down · per side</small></span><span class="dose"><span class="rp">3 × 6–8</span></span></div>
+        <div class="row"><svg class="ic"><use href="#calfBent"/></svg><span class="ord">B2</span><span class="nm">Single-leg calf raise<small class="cmp">Bent knee ~25° · soleus</small></span><span class="dose"><span class="rp">3 × 10–15</span></span></div>
+        <div class="row"><svg class="ic"><use href="#deficit"/></svg><span class="ord">B3</span><span class="nm">Deficit split squat<small class="cmp">or fwd-lean DB squat · /side</small></span><span class="dose"><span class="rp">3 × 8</span></span></div>
+      </div>
+
+      <div class="phase">Proprioceptive</div>
+      <div class="block">
+        <div class="row"><svg class="ic"><use href="#balance"/></svg><span class="ord">B4</span><span class="nm">Balance progression<small>Eyes closed → unstable → land</small></span><span class="dose"><span class="rp">3 × 30–45s</span></span></div>
+      </div>
+
+      <div class="phase">Mobility · glides</div>
+      <div class="block">
+        <div class="row"><svg class="ic"><use href="#glide"/></svg><span class="ord">B5</span><span class="nm">Talocrural glide + lunge<small>End of session</small></span><span class="dose"><span class="rp">3 × 10</span></span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ========== SESSION C ========== -->
+  <div class="cband">
+    <div class="day-head"><span class="tag">C</span><h2>Lighter / Skill</h2></div>
+    <div class="cnote">
+      <ul>
+        <li>Repeat whichever of <b>A or B</b> was done less recently, at <b>~70% load</b>.</li>
+        <li>More proprioceptive and <b>hop-landing</b> work — stick the landings.</li>
+        <li><b>Drop this session</b> if the week's surfing / climbing has already loaded the ankle heavily.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ========== TRAINING LOG ========== -->
+  <h3 class="sec">Session log <span id="tlSync">tap to record a completed training</span></h3>
+  <div class="tl">
+    <div class="tl-bar">
+      <span class="tl-status" id="tlStatus" data-mode="off">Offline · saved to this browser only</span>
+      <button type="button" class="tl-gear" id="tlGear" aria-label="Sync settings">Sync settings</button>
+    </div>
+    <div class="tl-cfg" id="tlCfg" hidden>
+      <p class="tl-cfg-note">Syncs this log to a markdown file in a GitHub repo, so it's shared across your devices. Your token is stored only in this browser and never written to the repo. <a id="tlPatLink" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a fine-grained token</a> with <b>Contents: Read and write</b> on just this repo.</p>
+      <div class="tl-cfg-grid">
+        <label>GitHub username<input type="text" id="cfgOwner" placeholder="your-username" autocomplete="off"></label>
+        <label>Repository<input type="text" id="cfgRepo" placeholder="ankle-rehab" autocomplete="off"></label>
+        <label>File path<input type="text" id="cfgPath" placeholder="session-log.md" autocomplete="off"></label>
+        <label>Branch<input type="text" id="cfgBranch" placeholder="main" autocomplete="off"></label>
+        <label class="tl-cfg-tok">Access token<input type="password" id="cfgToken" placeholder="github_pat_…" autocomplete="off"></label>
+      </div>
+      <div class="tl-cfg-btns">
+        <button type="button" class="tl-add" id="cfgSave">Save &amp; sync</button>
+        <button type="button" class="tl-clear" id="cfgClear">Disconnect</button>
+      </div>
+    </div>
+    <div class="tl-form">
+      <div class="tl-field">
+        <label class="tl-lbl">Session</label>
+        <div class="tl-seg" id="tlSeg">
+          <button type="button" data-s="A" class="on">A</button>
+          <button type="button" data-s="B">B</button>
+          <button type="button" data-s="C">C</button>
+        </div>
+      </div>
+      <div class="tl-field">
+        <label class="tl-lbl" for="tlDate">Date</label>
+        <input type="date" id="tlDate">
+      </div>
+      <div class="tl-field">
+        <label class="tl-lbl" for="tlKtw">Knee-to-wall (cm)</label>
+        <input type="number" id="tlKtw" step="0.1" min="0" placeholder="e.g. 9.5">
+      </div>
+      <button type="button" class="tl-add" id="tlAdd">Log training</button>
+    </div>
+    <table class="tl-table" id="tlTable">
+      <thead><tr><th>Date</th><th>Session</th><th>KTW (cm)</th><th></th></tr></thead>
+      <tbody id="tlBody"></tbody>
+    </table>
+    <div class="tl-empty" id="tlEmpty">No sessions logged yet.</div>
+  </div>
+
+  <!-- ========== MEASUREMENT ========== -->
+  <h3 class="sec">Weekly measurement <span>Knee-to-wall · weight-bearing lunge</span></h3>
+  <div class="measure">
+    <div>
+      <ol class="proto">
+        <li><b>Barefoot.</b> Tape measure fixed to the floor, perpendicular to the wall.</li>
+        <li>Second toe and heel centre aligned along the tape.</li>
+        <li>Knee tracks over the second toe and touches the wall. <b>Heel must stay down.</b></li>
+        <li>Record the longest distance where both conditions hold.</li>
+        <li>3 attempts — record the best.</li>
+        <li>Same conditions every time. Unwarmed, pre-session is the more honest number.</li>
+        <li><b>Always measure both ankles.</b></li>
+      </ol>
+      <div class="diag"><b>One-off diagnostic.</b> Measure knee straight-ish vs. deeply bent. Improves a lot with the knee bent → restriction is more calf / soleus (muscular). Same either way, with a hard pinching block at the front → points to joint / capsular or bony restriction — this won't respond to mobility work, and is the reason for the 6-week checkpoint.</div>
+    </div>
+    <div>
+      <table class="mtable">
+        <thead><tr><th>Metric</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Minimal detectable change</td><td class="v">~1.6–1.9 cm</td><td>Below this, the change is noise</td></tr>
+          <tr><td>Typical adult range</td><td class="v">~9–12 cm</td><td>Loose reference; varies widely</td></tr>
+          <tr><td>Primary target</td><td class="v">Asymmetry</td><td>Side-to-side gap matters more than the absolute number</td></tr>
+        </tbody>
+      </table>
+      <div class="diag"><b>A 1 cm week-on-week change is almost certainly noise.</b> Track the trend over a month, not week to week.</div>
+    </div>
+  </div>
+
+  <!-- ========== PROGRESSION ========== -->
+  <h3 class="sec">Progression rules <span>make "challenging" operational</span></h3>
+  <div class="prog">
+    <ul>
+      <li>End each strength set with <b>1–2 reps in reserve</b> — certain you couldn't do 4 more.</li>
+      <li><b>Add load</b> when you hit the top of the rep range with good form on <b>all</b> sets.</li>
+      <li>Calf-raise standard: <b>full heel drop</b>, no knee bounce, no trunk lean.</li>
+      <li>After the glides, spend <b>2–3 min loading</b> the new range — deep split-squat holds, slow lunges to the wall. Range you don't load, you don't keep.</li>
+    </ul>
+    <div class="bench">
+      <b>Calf-raise capacity benchmark</b>
+      <span class="big">24 reps ♂ · 21 reps ♀</span>
+      Median single-leg heel rises to failure on a 10° incline (566 healthy adults). Test both legs every 4 weeks — the <b>injured / uninjured ratio</b> beats the raw number. Target <b>&gt;90%</b>.
+    </div>
+  </div>
+
+  <!-- ========== REVIEW ========== -->
+  <h3 class="sec">The 4–6 week review <span>return to physio if any hold</span></h3>
+  <div class="review">
+    <div class="intro">Tick anything true at 6 weeks. <b>If any box is checked, return to the physio.</b></div>
+    <label class="chk"><input type="checkbox"><span>Knee-to-wall on the injured side hasn't moved by more than <b>~2 cm</b> <b>and</b> the side-to-side gap is unchanged.</span></label>
+    <label class="chk"><input type="checkbox"><span>A hard, blocking pinch at the <b>front</b> of the ankle at end range (rather than a stretch behind).</span></label>
+    <label class="chk"><input type="checkbox"><span>Calf-raise capacity on the injured side stays below <b>~80%</b> of the other leg despite consistent loading.</span></label>
+    <div class="out">The first two together are the classic pattern for anterior ankle impingement or a capsular restriction — neither responds well to more of the same exercises. That is precisely why the checkpoint exists.</div>
+  </div>
+
+  <!-- ========== TRACKING LOG ========== -->
+  <footer>
+    <div class="fh">On the glides</div>
+    <b>Load the range you just opened.</b> Weight-bearing mobilisation-with-movement opens a window rather than making lasting change — the effect is largely acute. Don't finish on the glide; load into the new range afterward. <b>Manage expectations:</b> the technique targets excessive anterior talus translation after a lateral sprain; its value months into rehab is less established. Low-risk and worth 5 minutes, but unlikely to unlock the range on its own.
+    <div class="fh">Note on interpretation</div>
+    "Glide" is read as a talocrural mobilisation-with-movement (posterior talus / anterior tibia glide while lunging into dorsiflexion). "Resisted ankle reflections" is read as <b>resisted eversion</b> — eversion strength matters most after a lateral ligament injury. <b>Worth confirming with the physio.</b>
+    <div class="fh">Uncertainties</div>
+    Injury grade, ligaments involved, and any residual laxity are unknown here; baseline numbers are unknown; the rep and load ranges are conventional but generic. <b>The physio's judgement overrides anything in this document.</b>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var actx=null;
+  function unlock(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();}catch(e){}}
+  function beep(){
+    try{
+      unlock();var t=actx.currentTime;
+      [0,0.18,0.36].forEach(function(off){
+        var o=actx.createOscillator(),g=actx.createGain();
+        o.type='sine';o.frequency.value=880;o.connect(g);g.connect(actx.destination);
+        g.gain.setValueAtTime(0.0001,t+off);
+        g.gain.exponentialRampToValueAtTime(0.4,t+off+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+off+0.16);
+        o.start(t+off);o.stop(t+off+0.17);
+      });
+    }catch(e){}
+  }
+  function format(sec){sec=Math.max(0,Math.ceil(sec));var m=Math.floor(sec/60),s=sec%60;return m+':'+String(s).padStart(2,'0');}
+  document.querySelectorAll('.rt').forEach(function(btn){
+    var total=parseInt(btn.getAttribute('data-seconds'),10);
+    var label=btn.getAttribute('data-label');
+    var timeEl=btn.querySelector('.rt-time');
+    var raf=null,start=0,running=false;
+    function reset(){running=false;if(raf)cancelAnimationFrame(raf);raf=null;btn.classList.remove('running');btn.style.setProperty('--deg','360deg');timeEl.textContent=label;}
+    function finish(){running=false;raf=null;btn.classList.remove('running');btn.style.setProperty('--deg','360deg');btn.classList.add('done');timeEl.textContent=label;beep();if(navigator.vibrate)navigator.vibrate([200,80,200]);setTimeout(function(){btn.classList.remove('done');},520);}
+    function frame(now){
+      var remaining=total-(now-start)/1000;
+      if(remaining<=0){finish();return;}
+      btn.style.setProperty('--deg',(360*(remaining/total))+'deg');
+      timeEl.textContent=format(remaining);
+      raf=requestAnimationFrame(frame);
+    }
+    btn.addEventListener('click',function(){
+      unlock();
+      if(running){reset();return;}
+      running=true;btn.classList.add('running');btn.classList.remove('done');
+      start=performance.now();timeEl.textContent=format(total);
+      raf=requestAnimationFrame(frame);
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  var C={
+    "Bulgarian split squat":"<p><b>Setup.</b> Stand a stride in front of a bench, rear foot resting on it, dumbbells at your sides.</p><p><b>Move.</b> Lower straight down so the front knee travels <b>forward over the toes</b> with the heel flat, then drive back up.</p><p><b>Cues.</b> This is the loaded dorsiflexion driver — let the front knee go forward, keep the heel planted. 1–2 reps in reserve.</p>",
+    "Single-leg calf raise":"<p><b>Setup.</b> Stand on one foot on the edge of a step, ball of the foot on the edge, heel free to drop.</p><p><b>Move.</b> Full range off the step — <b>2 s up / 1 s hold / 3 s down</b>. Straight knee loads the gastrocnemius; bent knee (~25°) shifts it to the soleus.</p><p><b>Cues.</b> Full heel drop, no knee bounce, no trunk lean. Add load past ~20 clean reps.</p>",
+    "Resisted eversion":"<p><b>Setup.</b> Sit with a band looped around the forefoot, anchored to the inside so it pulls the foot inward.</p><p><b>Move.</b> Turn the sole outward against the band (eversion), slow and controlled, through the full range, then return.</p><p><b>Cues.</b> Eversion strength matters most after a lateral ligament injury. Keep the shin still — movement comes from the ankle.</p>",
+    "Single-leg toe-touch matrix":"<p><b>Setup.</b> Balance on the injured leg, slight knee bend, hips level.</p><p><b>Move.</b> Reach the free foot to tap the floor <b>forward, backward, then lateral</b>, returning to balance between each. That's one round per direction.</p><p><b>Cues.</b> Control the return — the balance demand is the point, not the reach distance.</p>",
+    "Talocrural glide + lunge":"<p><b>How.</b> A mobilisation-with-movement: create a posterior glide of the talus (anterior tibia glide) while actively lunging the knee forward over the toes toward the wall, heel down.</p><p><b>Cues.</b> Do it <b>at the end of the session when warm</b>. Don't finish here — spend 2–3 min loading the new range afterward (deep split-squat holds, slow lunges to the wall).</p>",
+    "Cossack squat":"<p><b>Setup.</b> Wide stance, hold a light plate at your chest as a counterweight.</p><p><b>Move.</b> Shift over one leg into a deep side squat, other leg straight, then travel across to the other side.</p><p><b>Cues.</b> <b>Heel down throughout</b> — that's the point. Keep the chest up.</p>",
+    "Deficit split squat":"<p><b>Setup.</b> Front foot on a small plate or step so it sits raised (the deficit); rear foot back. Or use a single-leg forward-lean DB squat instead.</p><p><b>Move.</b> Lower into a deep split squat, front knee tracking forward over the toes, then drive up.</p><p><b>Cues.</b> The deficit lets you reach more dorsiflexion under load. Heel stays flat.</p>",
+    "Balance progression":"<p><b>How.</b> Single-leg balance, progressing over weeks: <b>eyes closed → unstable surface → hopping and stick-landings.</b></p><p><b>Cues.</b> Hold 30–45 s per set (use the balance timer). Only progress a stage once the current one is genuinely steady.</p>"
+  };
+  var SVGNS="http://www.w3.org/2000/svg";
+  function keyOf(row){
+    var nm=row.querySelector('.nm');
+    if(nm&&nm.firstChild) return nm.firstChild.textContent.trim();
+    var sp=row.querySelector('span');
+    return sp?sp.textContent.trim():'';
+  }
+  document.querySelectorAll('.row').forEach(function(row){
+    var key=keyOf(row), html=C[key];
+    if(!html) return;
+
+    var chev=document.createElement('span');chev.className='chev';row.appendChild(chev);
+
+    var detail=document.createElement('div');detail.className='detail';
+    var inner=document.createElement('div');inner.className='detail-inner';
+    var figWrap=document.createElement('div');figWrap.className='detail-fig';
+
+    var srcUse=row.querySelector('use');
+    var href=srcUse?(srcUse.getAttribute('href')||srcUse.getAttribute('xlink:href')):null;
+    if(href){
+      var svg=document.createElementNS(SVGNS,'svg');svg.setAttribute('viewBox','0 0 48 48');
+      var use=document.createElementNS(SVGNS,'use');use.setAttribute('href',href);
+      svg.appendChild(use);figWrap.appendChild(svg);
+    }
+    var txt=document.createElement('div');txt.className='detail-txt';txt.innerHTML=html;
+    inner.appendChild(figWrap);inner.appendChild(txt);detail.appendChild(inner);
+    row.parentNode.insertBefore(detail,row.nextSibling);
+
+    row.setAttribute('role','button');
+    row.setAttribute('tabindex','0');
+    row.setAttribute('aria-expanded','false');
+
+    function toggle(){
+      var open=row.classList.toggle('open');
+      detail.style.maxHeight=open?(detail.scrollHeight+'px'):'0px';
+      row.setAttribute('aria-expanded',open?'true':'false');
+    }
+    row.addEventListener('click',toggle);
+    row.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  var el=document.getElementById('clock');
+  function tick(){
+    var d=new Date();
+    el.textContent=String(d.getHours()).padStart(2,'0')+'h'+String(d.getMinutes()).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick,1000*15);
+})();
+</script>
+<script>
+(function(){
+  var KEY='echo1-session-log';
+  var CFGKEY='echo1-gh-cfg';
+  var seg=document.getElementById('tlSeg');
+  var dateEl=document.getElementById('tlDate');
+  var ktwEl=document.getElementById('tlKtw');
+  var addBtn=document.getElementById('tlAdd');
+  var body=document.getElementById('tlBody');
+  var table=document.getElementById('tlTable');
+  var empty=document.getElementById('tlEmpty');
+  var statusEl=document.getElementById('tlStatus');
+  var gear=document.getElementById('tlGear');
+  var cfgBox=document.getElementById('tlCfg');
+  var sel='A';
+  var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  dateEl.value=new Date().toISOString().slice(0,10);
+
+  seg.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    sel=b.getAttribute('data-s');
+    seg.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+  });
+
+  /* ---- local cache ---- */
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}}
+  function save(list){try{localStorage.setItem(KEY,JSON.stringify(list));}catch(e){}}
+  function fmt(d){var p=(d||'').split('-');if(p.length!==3)return d;return parseInt(p[2],10)+' '+mo[parseInt(p[1],10)-1]+' '+p[0];}
+
+  /* ---- github config ---- */
+  function cfg(){try{return JSON.parse(localStorage.getItem(CFGKEY))||{};}catch(e){return {};}}
+  function setCfg(o){try{localStorage.setItem(CFGKEY,JSON.stringify(o));}catch(e){}}
+  function connected(){var c=cfg();return !!(c.owner&&c.repo&&c.path&&c.token);}
+  var ghSha=null;
+
+  function setStatus(mode,text){statusEl.setAttribute('data-mode',mode);statusEl.textContent=text;}
+
+  /* ---- markdown <-> data ---- */
+  function toMarkdown(list){
+    var l=list.slice().sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:0;});
+    var out='# Echo 1.0 — Session Log\n\n';
+    out+='| Date | Session | KTW (cm) |\n|---|---|---|\n';
+    l.forEach(function(r){out+='| '+r.date+' | '+r.session+' | '+(r.ktw!==''&&r.ktw!=null?r.ktw:'')+' |\n';});
+    return out;
+  }
+  function parseMarkdown(md){
+    var list=[],lines=md.split('\n');
+    lines.forEach(function(ln){
+      var m=ln.match(/^\s*\|(.+)\|\s*$/);
+      if(!m) return;
+      var cells=m[1].split('|').map(function(s){return s.trim();});
+      if(cells.length<3) return;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(cells[0])) return; // skip header + separator
+      list.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,7),date:cells[0],session:cells[1],ktw:cells[2]});
+    });
+    return list;
+  }
+
+  /* ---- github api ---- */
+  function b64enc(s){return btoa(unescape(encodeURIComponent(s)));}
+  function b64dec(s){return decodeURIComponent(escape(atob(s.replace(/\n/g,''))));}
+  function ghUrl(){var c=cfg();return 'https://api.github.com/repos/'+c.owner+'/'+c.repo+'/contents/'+c.path;}
+  function ghHeaders(){var c=cfg();return {'Authorization':'Bearer '+c.token,'Accept':'application/vnd.github+json'};}
+
+  function ghPull(){
+    var c=cfg();
+    return fetch(ghUrl()+'?ref='+encodeURIComponent(c.branch||'main')+'&t='+Date.now(),{headers:ghHeaders(),cache:'no-store'})
+      .then(function(r){
+        if(r.status===404){ghSha=null;return [];} // file not created yet
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        return r.json().then(function(j){ghSha=j.sha;return parseMarkdown(b64dec(j.content||''));});
+      });
+  }
+  function ghPush(list,msg){
+    var c=cfg();
+    var payload={message:msg||'Update session log',content:b64enc(toMarkdown(list)),branch:c.branch||'main'};
+    if(ghSha) payload.sha=ghSha;
+    return fetch(ghUrl(),{method:'PUT',headers:ghHeaders(),body:JSON.stringify(payload)})
+      .then(function(r){
+        if(r.status===409){ // sha conflict — refetch and retry once
+          return ghPull().then(function(){payload.sha=ghSha;return fetch(ghUrl(),{method:'PUT',headers:ghHeaders(),body:JSON.stringify(payload)});});
+        }
+        return r;
+      })
+      .then(function(r){if(!r.ok) throw new Error('HTTP '+r.status);return r.json();})
+      .then(function(j){if(j&&j.content)ghSha=j.content.sha;});
+  }
+
+  /* ---- render ---- */
+  function render(){
+    var list=load();
+    list.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:0;});
+    body.innerHTML='';
+    if(!list.length){table.style.display='none';empty.style.display='block';return;}
+    table.style.display='';empty.style.display='none';
+    list.forEach(function(r){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td class="date">'+fmt(r.date)+'</td><td class="ses">'+r.session+'</td><td class="ktw">'+(r.ktw!==''&&r.ktw!=null?r.ktw:'—')+'</td>';
+      var td=document.createElement('td');
+      var del=document.createElement('button');
+      del.className='tl-del';del.title='Delete';del.setAttribute('aria-label','Delete entry');del.textContent='\u00d7';
+      del.addEventListener('click',function(){
+        var l=load().filter(function(x){return x.id!==r.id;});
+        save(l);render();
+        pushIfConnected('Delete session '+r.session+' '+r.date);
+      });
+      td.appendChild(del);tr.appendChild(td);body.appendChild(tr);
+    });
+  }
+
+  function pushIfConnected(msg){
+    if(!connected()) return;
+    setStatus('sync','Syncing…');
+    ghPush(load(),msg).then(function(){setStatus('ok','Synced to GitHub');})
+      .catch(function(e){setStatus('err','Sync failed — saved locally');});
+  }
+
+  /* ---- add ---- */
+  addBtn.addEventListener('click',function(){
+    if(!dateEl.value){dateEl.focus();return;}
+    var list=load();
+    list.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,7),session:sel,date:dateEl.value,ktw:ktwEl.value.trim()});
+    save(list);
+    ktwEl.value='';
+    render();
+    pushIfConnected('Log session '+sel+' '+dateEl.value);
+  });
+
+  /* ---- settings panel ---- */
+  var cO=document.getElementById('cfgOwner'),cR=document.getElementById('cfgRepo'),
+      cP=document.getElementById('cfgPath'),cB=document.getElementById('cfgBranch'),cT=document.getElementById('cfgToken');
+  function fillCfg(){var c=cfg();cO.value=c.owner||'';cR.value=c.repo||'';cP.value=c.path||'session-log.md';cB.value=c.branch||'main';cT.value=c.token||'';}
+  gear.addEventListener('click',function(){cfgBox.hidden=!cfgBox.hidden;if(!cfgBox.hidden)fillCfg();});
+  document.getElementById('cfgSave').addEventListener('click',function(){
+    setCfg({owner:cO.value.trim(),repo:cR.value.trim(),path:(cP.value.trim()||'session-log.md'),branch:(cB.value.trim()||'main'),token:cT.value.trim()});
+    if(!connected()){setStatus('off','Fill in all fields to sync');return;}
+    setStatus('sync','Connecting…');
+    ghSha=null;
+    ghPull().then(function(remote){
+      var localList=load();
+      // merge: union by date+session+ktw, remote wins on shape; keep locals not in remote
+      var seen={};remote.forEach(function(r){seen[r.date+'|'+r.session+'|'+r.ktw]=1;});
+      var merged=remote.slice();
+      localList.forEach(function(r){if(!seen[r.date+'|'+r.session+'|'+r.ktw])merged.push(r);});
+      save(merged);render();
+      return ghPush(load(),'Sync session log');
+    }).then(function(){setStatus('ok','Synced to GitHub');cfgBox.hidden=true;})
+      .catch(function(e){setStatus('err','Connection failed — check token & repo');});
+  });
+  document.getElementById('cfgClear').addEventListener('click',function(){
+    localStorage.removeItem(CFGKEY);ghSha=null;fillCfg();setStatus('off','Offline · saved to this browser only');
+  });
+
+  /* ---- boot ---- */
+  render();
+  if(connected()){
+    setStatus('sync','Loading from GitHub…');
+    ghPull().then(function(remote){
+      var localList=load();
+      var seen={};remote.forEach(function(r){seen[r.date+'|'+r.session+'|'+r.ktw]=1;});
+      var merged=remote.slice();
+      localList.forEach(function(r){if(!seen[r.date+'|'+r.session+'|'+r.ktw])merged.push(r);});
+      save(merged);render();
+      setStatus('ok','Synced to GitHub');
+      // if we had local-only rows, push the merge back up
+      if(merged.length!==remote.length) ghPush(load(),'Merge local session log');
+    }).catch(function(e){setStatus('err','Offline — using local copy');});
+  }
+})();
+</script>
+</body>
+</html>
