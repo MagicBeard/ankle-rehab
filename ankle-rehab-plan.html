@@ -29,6 +29,10 @@
   .key .val{font-size:11.5px;font-weight:500;}
   .key .val em{font-style:normal;color:var(--ink-soft);font-size:10.5px;}
   .key div.tcell{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .clockwrap{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;}
+  .key div.tcell.tcenter{justify-content:center;}
+  .tcenter .clockwrap{align-items:center;align-self:center;}
+  .weeks{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:var(--accent);letter-spacing:-0.01em;margin-top:2px;white-space:nowrap;font-variant-numeric:tabular-nums;}
   .clock{font-family:'Space Mono',monospace;font-size:19px;font-weight:700;color:var(--accent);letter-spacing:-0.01em;flex:0 0 auto;font-variant-numeric:tabular-nums;}
 
   /* session structure timeline */
@@ -69,6 +73,11 @@
 
   h3.sec{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;border-bottom:2px solid var(--ink);padding-bottom:5px;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:baseline;}
   h3.sec span{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:400;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);}
+  h3.sec.coll{cursor:pointer;padding-right:22px;position:relative;-webkit-tap-highlight-color:transparent;}
+  h3.sec.coll:hover{color:var(--accent-deep);}
+  h3.sec.coll .chev{position:absolute;right:2px;top:6px;width:8px;height:8px;border-right:2.4px solid var(--accent-deep);border-bottom:2.4px solid var(--accent-deep);transform:rotate(45deg);transition:transform .2s;}
+  h3.sec.coll.open .chev{transform:rotate(-135deg);top:9px;}
+  .coll-body{overflow:hidden;max-height:0;transition:max-height .3s ease;}
 
   .measure{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;}
   .proto{font-size:11px;line-height:1.55;color:var(--ink-soft);}
@@ -294,20 +303,20 @@
 <div class="sheet">
 
   <header>
-    <h1>Echo <span>1.0</span></h1>
-    <div class="meta">Ankle &amp; foot ligament rehab<br>3 sessions / week · ~40 min · dorsiflexion focus</div>
+    <h1>Echo <span>1.1</span></h1>
+    <div class="meta">Ankle &amp; foot ligament rehab<br>2 - 3 sessions per week · 40 min · dorsiflexion focus</div>
   </header>
 
   <div class="key">
-    <div class="tcell"><div><div class="lbl">Strength sets</div><div class="val">1–2 reps in reserve <em>· rest 90 s–2 min</em></div></div><button class="rt" data-seconds="120" data-label="2:00" aria-label="Start strength rest timer, 2 minutes"><span class="rt-time">2:00</span></button></div>
+    <div class="tcell"><div><div class="lbl">Strength sets</div><div class="val">1–2 reps in reserve<br><em>Rest 90s –2 min</em></div></div><button class="rt" data-seconds="120" data-label="2:00" aria-label="Start strength rest timer, 2 minutes"><span class="rt-time">2:00</span></button></div>
     <div class="tcell"><div><div class="lbl">Balance hold</div><div class="val">Eyes closed → unstable → landings</div></div><button class="rt" data-seconds="45" data-label="0:45" aria-label="Start 45 second balance hold timer"><span class="rt-time">0:45</span></button></div>
-    <div class="tcell"><div><div class="lbl">Review point</div><div class="val">4–6 weeks <em>· then reassess</em></div></div><div class="clock" id="clock">--h--</div></div>
+    <div class="tcell tcenter"><div class="clockwrap"><div class="clock" id="clock">--h--</div><div class="weeks" id="weeks">—</div></div></div>
   </div>
 
   <!-- SESSION STRUCTURE -->
   <div class="struct">
-    <div><div class="st-hd"><span class="st-n">Warm-up</span><span class="st-t">5–8 min</span></div><div class="st-b">Heat + ball rolling on the calf.</div></div>
-    <div class="main"><div class="st-hd"><span class="st-n">Strength · main</span><span class="st-t">20 min</span></div><div class="st-b">Must be genuinely hard.</div></div>
+    <div><div class="st-hd"><span class="st-n">Warm-up</span><span class="st-t">5–8 min</span></div><div class="st-b">Ankle twists + light stretching.</div></div>
+    <div><div class="st-hd"><span class="st-n">Strength · main</span><span class="st-t">20 min</span></div><div class="st-b">Must be genuinely hard.</div></div>
     <div><div class="st-hd"><span class="st-n">Proprioceptive</span><span class="st-t">8 min</span></div><div class="st-b">Balance, landings, toe-touch matrix.</div></div>
     <div><div class="st-hd"><span class="st-n">Mobility · glides</span><span class="st-t">5 min</span></div><div class="st-b">End of session, when warm.</div></div>
   </div>
@@ -422,7 +431,8 @@
   </div>
 
   <!-- ========== MEASUREMENT ========== -->
-  <h3 class="sec">Weekly measurement <span>Knee-to-wall · weight-bearing lunge</span></h3>
+  <h3 class="sec coll" data-coll="m1">Weekly measurement <span>Knee-to-wall · weight-bearing lunge</span></h3>
+  <div class="coll-body" id="m1">
   <div class="measure">
     <div>
       <ol class="proto">
@@ -448,9 +458,11 @@
       <div class="diag"><b>A 1 cm week-on-week change is almost certainly noise.</b> Track the trend over a month, not week to week.</div>
     </div>
   </div>
+  </div>
 
   <!-- ========== PROGRESSION ========== -->
-  <h3 class="sec">Progression rules <span>make "challenging" operational</span></h3>
+  <h3 class="sec coll" data-coll="m2">Progression rules <span>make "challenging" operational</span></h3>
+  <div class="coll-body" id="m2">
   <div class="prog">
     <ul>
       <li>End each strength set with <b>1–2 reps in reserve</b> — certain you couldn't do 4 more.</li>
@@ -464,15 +476,18 @@
       Median single-leg heel rises to failure on a 10° incline (566 healthy adults). Test both legs every 4 weeks — the <b>injured / uninjured ratio</b> beats the raw number. Target <b>&gt;90%</b>.
     </div>
   </div>
+  </div>
 
   <!-- ========== REVIEW ========== -->
-  <h3 class="sec">The 4–6 week review <span>return to physio if any hold</span></h3>
+  <h3 class="sec coll" data-coll="m3">The 6 week review <span>return to physio if any hold</span></h3>
+  <div class="coll-body" id="m3">
   <div class="review">
     <div class="intro">Tick anything true at 6 weeks. <b>If any box is checked, return to the physio.</b></div>
     <label class="chk"><input type="checkbox"><span>Knee-to-wall on the injured side hasn't moved by more than <b>~2 cm</b> <b>and</b> the side-to-side gap is unchanged.</span></label>
     <label class="chk"><input type="checkbox"><span>A hard, blocking pinch at the <b>front</b> of the ankle at end range (rather than a stretch behind).</span></label>
     <label class="chk"><input type="checkbox"><span>Calf-raise capacity on the injured side stays below <b>~80%</b> of the other leg despite consistent loading.</span></label>
     <div class="out">The first two together are the classic pattern for anterior ankle impingement or a capsular restriction — neither responds well to more of the same exercises. That is precisely why the checkpoint exists.</div>
+  </div>
   </div>
 
   <!-- ========== TRACKING LOG ========== -->
@@ -587,10 +602,28 @@
 </script>
 <script>
 (function(){
+  document.querySelectorAll('h3.sec.coll').forEach(function(h){
+    var body=document.getElementById(h.getAttribute('data-coll'));
+    var chev=document.createElement('span');chev.className='chev';h.appendChild(chev);
+    h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded','false');
+    function toggle(){
+      var open=h.classList.toggle('open');
+      body.style.maxHeight=open?(body.scrollHeight+'px'):'0px';
+      h.setAttribute('aria-expanded',open?'true':'false');
+    }
+    h.addEventListener('click',toggle);
+    h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+  });
+})();
+(function(){
   var el=document.getElementById('clock');
+  var wk=document.getElementById('weeks');
+  var start=new Date(2026,6,14);
   function tick(){
     var d=new Date();
     el.textContent=String(d.getHours()).padStart(2,'0')+'h'+String(d.getMinutes()).padStart(2,'0');
+    var n=Math.floor((d-start)/(7*24*3600*1000));
+    if(wk) wk.textContent=n<0?'\u2014':('Week '+n);
   }
   tick();
   setInterval(tick,1000*15);
