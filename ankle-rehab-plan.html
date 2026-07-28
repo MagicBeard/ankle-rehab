@@ -239,11 +239,8 @@
     </symbol>
 
     <symbol id="eversion" viewBox="0 0 48 48">
-      <path class="b" d="M15 30 L15 18"/>
-      <path class="b" d="M15 30 L26 33"/>
-      <path class="b" d="M26 33 L31 29"/>
-      <path class="e" d="M31 31 Q40 27 39 37"/>
-      <line class="e" x1="37" y1="37" x2="41" y2="37"/>
+      <path class="b" d="M16 16 L16 30 L34 30"/>
+      <path class="e" d="M34 22 Q10 26 34 38"/>
     </symbol>
 
     <symbol id="toeMatrix" viewBox="0 0 48 48">
@@ -308,7 +305,7 @@
   </header>
 
   <div class="key">
-    <div class="tcell"><div><div class="lbl">Strength sets</div><div class="val">1–2 reps in reserve<br><em>Rest 90s –2 min</em></div></div><button class="rt" data-seconds="120" data-label="2:00" aria-label="Start strength rest timer, 2 minutes"><span class="rt-time">2:00</span></button></div>
+    <div class="tcell"><div><div class="lbl">Strength sets</div><div class="val">1–2 reps in reserve<br><em>Rest 90s –2 min</em></div></div><button class="rt" data-seconds="90" data-label="1:30" aria-label="Start strength rest timer, 1 minute 30 seconds"><span class="rt-time">1:30</span></button></div>
     <div class="tcell"><div><div class="lbl">Balance hold</div><div class="val">Eyes closed → unstable → landings</div></div><button class="rt" data-seconds="45" data-label="0:45" aria-label="Start 45 second balance hold timer"><span class="rt-time">0:45</span></button></div>
     <div class="tcell tcenter"><div class="clockwrap"><div class="clock" id="clock">--h--</div><div class="weeks" id="weeks">—</div></div></div>
   </div>
@@ -330,9 +327,9 @@
 
       <div class="phase">Strength · main</div>
       <div class="block">
-        <div class="row"><svg class="ic"><use href="#bulgarian"/></svg><span class="ord">A1</span><span class="nm">Bulgarian split squat<small class="cmp">DBs · per side</small></span><span class="dose"><span class="rp">3–4 × 6–10</span></span></div>
-        <div class="row"><svg class="ic"><use href="#calfStraight"/></svg><span class="ord">A2</span><span class="nm">Single-leg calf raise<small class="cmp">Straight knee · gastroc</small></span><span class="dose"><span class="rp">3 × 8–15</span></span></div>
-        <div class="row"><svg class="ic"><use href="#eversion"/></svg><span class="ord">A3</span><span class="nm">Resisted eversion<small>Band</small></span><span class="dose"><span class="rp">3 × 15</span></span></div>
+        <div class="row"><svg class="ic"><use href="#eversion"/></svg><span class="ord">A1</span><span class="nm">Resisted band work<small>Band</small></span><span class="dose"><span class="rp">3 × 15</span></span></div>
+        <div class="row"><svg class="ic"><use href="#bulgarian"/></svg><span class="ord">A2</span><span class="nm">Bulgarian split squat<small class="cmp">DBs · per side</small></span><span class="dose"><span class="rp">3–4 × 6–10</span></span></div>
+        <div class="row"><svg class="ic"><use href="#calfStraight"/></svg><span class="ord">A3</span><span class="nm">Single-leg calf raise<small class="cmp">Straight knee · gastroc</small></span><span class="dose"><span class="rp">3 × 8–15</span></span></div>
       </div>
 
       <div class="phase">Proprioceptive</div>
@@ -353,9 +350,9 @@
 
       <div class="phase">Strength · main</div>
       <div class="block">
-        <div class="row"><svg class="ic"><use href="#cossack"/></svg><span class="ord">B1</span><span class="nm">Cossack squat<small class="cmp">Heel down · per side</small></span><span class="dose"><span class="rp">3 × 6–8</span></span></div>
-        <div class="row"><svg class="ic"><use href="#calfBent"/></svg><span class="ord">B2</span><span class="nm">Single-leg calf raise<small class="cmp">Bent knee ~25° · soleus</small></span><span class="dose"><span class="rp">3 × 10–15</span></span></div>
-        <div class="row"><svg class="ic"><use href="#deficit"/></svg><span class="ord">B3</span><span class="nm">Deficit split squat<small class="cmp">or fwd-lean DB squat · /side</small></span><span class="dose"><span class="rp">3 × 8</span></span></div>
+        <div class="row"><svg class="ic"><use href="#eversion"/></svg><span class="ord">B1</span><span class="nm">Resisted band work<small>Band</small></span><span class="dose"><span class="rp">3 × 15</span></span></div>
+        <div class="row"><svg class="ic"><use href="#cossack"/></svg><span class="ord">B2</span><span class="nm">Cossack squat<small class="cmp">Heel down · per side</small></span><span class="dose"><span class="rp">3 × 6–8</span></span></div>
+        <div class="row"><svg class="ic"><use href="#calfBent"/></svg><span class="ord">B3</span><span class="nm">Single-leg calf raise<small class="cmp">Bent knee ~25° · soleus</small></span><span class="dose"><span class="rp">3 × 10–15</span></span></div>
       </div>
 
       <div class="phase">Proprioceptive</div>
@@ -377,7 +374,7 @@
     <div class="cnote">
       <ul>
         <li>Repeat whichever of <b>A or B</b> was done less recently, at <b>~70% load</b>.</li>
-        <li>More proprioceptive and <b>hop-landing</b> work — stick the landings.</li>
+        <li>More <b>proprioceptive</b> work — balance and control.</li>
         <li><b>Drop this session</b> if the week's surfing / climbing has already loaded the ankle heavily.</li>
       </ul>
     </div>
@@ -549,7 +546,7 @@
   var C={
     "Bulgarian split squat":"<p><b>Setup.</b> Stand a stride in front of a bench, rear foot resting on it, dumbbells at your sides.</p><p><b>Move.</b> Lower straight down so the front knee travels <b>forward over the toes</b> with the heel flat, then drive back up.</p><p><b>Cues.</b> This is the loaded dorsiflexion driver — let the front knee go forward, keep the heel planted. 1–2 reps in reserve.</p>",
     "Single-leg calf raise":"<p><b>Setup.</b> Stand on one foot on the edge of a step, ball of the foot on the edge, heel free to drop.</p><p><b>Move.</b> Full range off the step — <b>2 s up / 1 s hold / 3 s down</b>. Straight knee loads the gastrocnemius; bent knee (~25°) shifts it to the soleus.</p><p><b>Cues.</b> Full heel drop, no knee bounce, no trunk lean. Add load past ~20 clean reps.</p>",
-    "Resisted eversion":"<p><b>Setup.</b> Sit with a band looped around the forefoot, anchored to the inside so it pulls the foot inward.</p><p><b>Move.</b> Turn the sole outward against the band (eversion), slow and controlled, through the full range, then return.</p><p><b>Cues.</b> Eversion strength matters most after a lateral ligament injury. Keep the shin still — movement comes from the ankle.</p>",
+    "Resisted band work":"<p><b>Setup.</b> Sit with a band looped around the forefoot, anchored to the inside so it pulls the foot inward.</p><p><b>Move.</b> Turn the sole outward against the band (eversion), slow and controlled, through the full range, then return.</p><p><b>Cues.</b> Eversion strength matters most after a lateral ligament injury. Keep the shin still — movement comes from the ankle.</p>",
     "Single-leg toe-touch matrix":"<p><b>Setup.</b> Balance on the injured leg, slight knee bend, hips level.</p><p><b>Move.</b> Reach the free foot to tap the floor <b>forward, backward, then lateral</b>, returning to balance between each. That's one round per direction.</p><p><b>Cues.</b> Control the return — the balance demand is the point, not the reach distance.</p>",
     "Talocrural glide + lunge":"<p><b>How.</b> A mobilisation-with-movement: create a posterior glide of the talus (anterior tibia glide) while actively lunging the knee forward over the toes toward the wall, heel down.</p><p><b>Cues.</b> Do it <b>at the end of the session when warm</b>. Don't finish here — spend 2–3 min loading the new range afterward (deep split-squat holds, slow lunges to the wall).</p>",
     "Cossack squat":"<p><b>Setup.</b> Wide stance, hold a light plate at your chest as a counterweight.</p><p><b>Move.</b> Shift over one leg into a deep side squat, other leg straight, then travel across to the other side.</p><p><b>Cues.</b> <b>Heel down throughout</b> — that's the point. Keep the chest up.</p>",
@@ -618,12 +615,12 @@
 (function(){
   var el=document.getElementById('clock');
   var wk=document.getElementById('weeks');
-  var start=new Date(2026,6,14);
+  var start=new Date(2026,6,16);
   function tick(){
     var d=new Date();
     el.textContent=String(d.getHours()).padStart(2,'0')+'h'+String(d.getMinutes()).padStart(2,'0');
-    var n=Math.floor((d-start)/(7*24*3600*1000));
-    if(wk) wk.textContent=n<0?'\u2014':('Week '+n);
+    var n=Math.floor((d-start)/(7*24*3600*1000))+1;
+    if(wk) wk.textContent=n<1?'\u2014':('Week '+n);
   }
   tick();
   setInterval(tick,1000*15);
